@@ -42,8 +42,8 @@ if [ ! -f $cronpath ]; then
 fi
 
 #declaring the cronjob if it is not present
-if grep -Fxq "*/1 * * * * root /root/Automation_Project/automation.sh" $cronpath; then
+if grep -Fxq "30 3 * * * root /root/Automation_Project/automation.sh" $cronpath; then
         echo "Cron Job already exists."
 else
-        sudo echo -e "*/1 * * * * root /root/Automation_Project/automation.sh" >> $cronpath
+        sudo echo -e "30 3 * * * root /root/Automation_Project/automation.sh" >> $cronpath
 fi
