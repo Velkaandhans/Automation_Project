@@ -23,3 +23,27 @@ sudo tar -cvf /tmp/$name-httpd-logs-$timestamp.tar /var/log/apache2/*.log
 
 #uploading to S3 bucket
 sudo aws s3 cp /tmp/$name-httpd-logs-$timestamp.tar $s3_bucket
+
+#creating inventory if not exist
+if [ ! -f "/var/www/html/inventory.html" ]; then
+        sudo touch /var/www/html/inventory.html
+        echo -e "Log Type\tDate Created\tType\tSize" >> /var/www/html/inventory.html
+fi
+#finding size of tar files
+size=$(du -h /tmp/$name-httpd-logs-$timestamp.tar |awk '{print $1}')
+
+#appending inventory file
+echo -e "Httpd-logs\t$timestamp\ttar\t$size" >> /var/www/html/inventory.html
+
+#creating anacron under cron.d
+cronpath="/etc/cron.d/anacron"
+if [ ! -f $cronpath ]; then
+        sudo touch $cronpath
+fi
+
+#declaring the cronjob if it is not present
+if grep -Fxq "*/1 * * * * root /root/Automation_Project/automation.sh" $cronpath; then
+        echo "Cron Job already exists."
+else
+        sudo echo -e "*/1 * * * * root /root/Automation_Project/automation.sh" >> $cronpath
+fi
